@@ -2,16 +2,25 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="suishen_fmt" uri="suishen.libs/fmt" %>
-<jsp:include page="../header.jsp" />
-<jsp:include page="../sidebar.jsp" />
-<!-- 页面 -->
+
+<em>
+    {
+    "popup":{"id":"${popup.id}","title":"${popup.title}","image":"${popup.image}","url":"${popup.url}","location":"${popup.location}","platform":"${popup.platform}","userGroups":"${popup.userGroups}","needLogin":"${popup.needLogin}","num":"${popup.num}","startTime":"${popup.startTime}","endTime":"${popup.endTime}"},
+    "popupLocations":[<c:forEach items="${popupLocations}" var="al" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"location":"${al.location}","desc":"${al.desc}"}</c:forEach>
+    ],
+    "userGroups":[<c:forEach items="${userGroups}" var="userGroup" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"group":"${userGroup.group}","groupName":"${userGroup.groupName}"}</c:forEach>
+    ],
+    "platforms":[<c:forEach items="${platforms}" var="pt" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${pt}"</c:forEach>]
+    }
+</em>
+<!-- 页面
 <div id="main-content" class="clearfix">
     <div id="page-content" class="clearfix">
         <div class="page-header position-relative">
             <h1>编辑广告</h1>
         </div>
         <div class="row-fluid">
-            <div class="row-fluid">
+            <div class="row-fluid"> -->
                 <form action="admin/popup/update" method="post" id="basic_validate" name="basic_validate" class="form-horizontal" novalidate="novalidate">
                     <input type="hidden" id="id" name="id" class="input-xxlarge" value="${popup.id}"/>
                     <div class="control-group">
@@ -124,11 +133,11 @@
                         </button>
                     </div>
                 </form>
-            </div>
+ <!--           </div>
         </div>
     </div>
 </div>
-<jsp:include page="../foot.jsp" />
+
     <link rel="stylesheet" href="assets/css/setting.css"/>
     <script type="text/javascript" src="assets/js/setting.js"></script>
     <script type="text/javascript" src="assets/js/setting_add_topic.js"></script>
@@ -164,4 +173,4 @@
         $("#end_time_hidden").val(end);
     }
 </script>
-</html>
+</html> -->

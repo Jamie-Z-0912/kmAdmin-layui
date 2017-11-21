@@ -1,0 +1,250 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <mvc:default-servlet-handler/>
+
+    <context:annotation-config/>
+
+    <!--开启aop-->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <bean id="objectMapper" class="kuaima.task.util.SuishenUnderScoreObjectMapper"/>
+
+    <bean id="suishenAccessExecutor" class="suishen.auth.access.impl.SuishenAcceptAccessExecutor">
+        <property name="roleUrlMap">
+            <map>
+                <!--设置某个角色可以访问的url,可用/main/**这种格式-->
+                <entry key="KM_ADMIN">
+                    <list>
+                        <value>/admin/**</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean
+                    class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
+            <bean
+                    class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+            <bean
+                    class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+            </bean>
+        </mvc:message-converters>
+        <mvc:argument-resolvers>
+            <bean class="suishen.libs.spring.core.argumentresolver.SuishenServletModelAttributeMethodProcessor">
+                <constructor-arg name="annotationNotRequired" value="true"/>
+                <constructor-arg name="extendDataBinder">
+                    <null/>
+                </constructor-arg>
+            </bean>
+            <bean class="kuaima.task.web.view.RequestAttributeOrParamArgumentResolver">
+            </bean>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
+    <bean id="contentNegotiatingViewResolver"
+          class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <!--<property name="defaultContentType" value="application/json"/>-->
+        <property name="mediaTypes">
+            <map>
+                <entry key="html" value="text/html;charset=UTF-8"/>
+                <entry key="json" value="application/json;charset=UTF-8"/>
+                <entry key="xls" value="application/vnd.ms-excel"/>
+                <entry key="pdf" value="application/pdf"/>
+            </map>
+        </property>
+        <property name="viewResolvers">
+            <list>
+                <bean
+                        class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="cache" value="false"/>
+                    <property name="prefix" value="/WEB-INF/jsp/"/>
+                    <property name="suffix" value=".jsp"/>
+                    <property name="contentType" value="text/html;charset=UTF-8"/>
+                </bean>
+                <bean class="org.springframework.web.servlet.view.XmlViewResolver">
+                    <property name="location">
+                        <value>classpath:spring-xml-views.xml</value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean
+                        class="kuaima.task.web.view.JsonAndJsonpView">
+                    <property name="objectMapper" ref="objectMapper"/>
+                    <property name="modelKeys">
+                        <set>
+                            <value>data</value>
+                            <value>status</value>
+                            <value>desc</value>
+                            <value>total</value>
+                            <value>total_page</value>
+                            <value>total_num</value>
+                            <value>list</value>
+                            <value>page</value>
+                            <value>timestamp</value>
+                        </set>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="exceptionResolver"
+          class="kuaima.task.web.view.AppsExceptionResolver">
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- one of the properties available; the maximum file size in bytes -->
+        <property name="maxUploadSize" value="1000000000"/>
+    </bean>
+
+    <context:component-scan base-package="kuaima.task.web"/>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**"/>
+            <bean class="suishen.auth.web.interceptor.SuishenAccessInterceptor">
+                <property name="accessExecutor" ref="suishenAccessExecutor"></property>
+            </bean>
+        </mvc:interceptor>
+
+        <!--访问频率限制-->
+        <mvc:interceptor>
+            <mvc:mapping path="/api/v1/checkin"/>
+            <mvc:mapping path="/api/v1/withdraw"/>
+            <mvc:mapping path="/api/v1/cz"/>
+            <mvc:mapping path="/api/v1/verify_code"/>
+            <mvc:mapping path="/api/v1/search"/>
+            <mvc:mapping path="/api/v1/redPack/receive"/>
+            <mvc:mapping path="/api/v1/comment/create"/>
+            <mvc:mapping path="/api/v1/like"/>
+            <mvc:mapping path="/api/v1/task/receiveReward"/>
+            <bean class="kuaima.task.web.interceptor.DeviceLimitVisitInterceptor" p:verifyFlag="true"></bean>
+        </mvc:interceptor>
+
+        <!--web访问频率限制-->
+        <mvc:interceptor>
+            <mvc:mapping path="/api/v1/verify_code/web"/>
+            <mvc:mapping path="/api/v1/post/fengchao"/>
+            <bean class="kuaima.task.web.interceptor.IPLimitVisitInterceptor" p:verifyFlag="true"></bean>
+        </mvc:interceptor>
+
+        <!--签名验证-->
+        <mvc:interceptor>
+            <mvc:mapping path="/api/v1/**" />
+            <mvc:mapping path="/api/v2/**" />
+            <mvc:exclude-mapping path="/api/v1/duiba/autoLogin" />
+            <mvc:exclude-mapping path="/api/v1/duiba/credits/consume" />
+            <mvc:exclude-mapping path="/api/v1/duiba/notify" />
+            <mvc:exclude-mapping path="/api/v1/duiba/recharge" />
+            <mvc:exclude-mapping path="/api/v1/cards" />
+            <mvc:exclude-mapping path="/api/v1/cards/my" />
+            <mvc:exclude-mapping path="/api/v1/collectArticles/delete/**" />
+            <mvc:exclude-mapping path="/api/v1/search/task" />
+            <mvc:exclude-mapping path="/api/v1/searchReward/receive" />
+            <mvc:exclude-mapping path="/api/v1/ads" />
+            <mvc:exclude-mapping path="/api/v1/activity/info" />
+            <mvc:exclude-mapping path="/api/v1/activity/join" />
+            <mvc:exclude-mapping path="/api/v1/activity/receiveReward" />
+            <mvc:exclude-mapping path="/api/v1/cards/list" />
+            <mvc:exclude-mapping path="/api/v1/zhdk/initialUsers" />
+            <mvc:exclude-mapping path="/api/v1/post/checkAuthority" />
+            <mvc:exclude-mapping path="/api/v1/post/personally" />
+            <mvc:exclude-mapping path="/api/v1/post/day_coin" />
+            <mvc:exclude-mapping path="/api/v1/post/wait_list" />
+            <mvc:exclude-mapping path="/api/v1/post/verify" />
+            <mvc:exclude-mapping path="/api/v1/recall/receiveReward" />
+            <mvc:exclude-mapping path="/api/v1/blacklist/check"/>
+            <mvc:exclude-mapping path="/api/v1/post/fengchao"/>
+            <mvc:exclude-mapping path="/api/v1/verify_code/web"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*/member"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*/webJoin/*"/>
+            <mvc:exclude-mapping path="/api/v1/teams/myTeam"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*/invite/*"/>
+            <mvc:exclude-mapping path="/api/v1/withdrawList/progress"/>
+            <mvc:exclude-mapping path="/api/v1/aggregation/list"/>
+            <mvc:exclude-mapping path="/api/v1/teams/make/status"/>
+            <mvc:exclude-mapping path="/api/v1/teams/make"/>
+            <mvc:exclude-mapping path="/api/v1/system/configs"/>
+            <mvc:exclude-mapping path="/api/v1/statsincome" />
+            <bean class="suishen.libs.spring.interceptor.SuishenRestSignVerificationInterceptorV2"
+                  p:verifyFlag="false" p:verifyTimestampFlag="false">
+                <property name="appService" ref="appService" />
+            </bean>
+        </mvc:interceptor>
+
+        <!--登陆验证-->
+        <mvc:interceptor>
+            <mvc:mapping path="/api/v1/**" />
+            <mvc:mapping path="/api/v2/**" />
+            <mvc:exclude-mapping path="/api/v1/verify_code/web"/>
+            <mvc:exclude-mapping path="/api/v1/comments" />
+            <mvc:exclude-mapping path="/api/v1/comment/review" />
+            <mvc:exclude-mapping path="/api/v1/ads/operation" />
+            <mvc:exclude-mapping path="/api/v1/redPoint" />
+            <mvc:exclude-mapping path="/api/v1/systemMsgs" />
+            <mvc:exclude-mapping path="/api/v1/system/configs" />
+            <mvc:exclude-mapping path="/api/v1/duiba/autoLogin" />
+            <mvc:exclude-mapping path="/api/v1/duiba/credits/consume" />
+            <mvc:exclude-mapping path="/api/v1/duiba/notify" />
+            <mvc:exclude-mapping path="/api/v1/duiba/recharge" />
+            <mvc:exclude-mapping path="/api/v1/ads" />
+            <mvc:exclude-mapping path="/api/v1/activity/info" />
+            <mvc:exclude-mapping path="/api/v1/post/checkOriginUrl" />
+            <mvc:exclude-mapping path="/api/v1/post/recommend" />
+            <mvc:exclude-mapping path="/api/v1/post/detail" />
+            <mvc:exclude-mapping path="/api/v1/post/user_info" />
+            <mvc:exclude-mapping path="/api/v1/tag/all" />
+            <mvc:exclude-mapping path="/api/v1/post/wait_list" />
+            <mvc:exclude-mapping path="/api/v1/post/verify" />
+            <mvc:exclude-mapping path="/api/v1/blacklist/check"/>
+            <mvc:exclude-mapping path="/api/v1/post/fengchao"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*/member"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*/webJoin/*"/>
+            <mvc:exclude-mapping path="/api/v1/teams/myTeam"/>
+            <mvc:exclude-mapping path="/api/v1/teams/*/invite/*"/>
+            <mvc:exclude-mapping path="/api/v1/aggregation/list"/>
+            <mvc:exclude-mapping path="/api/v1/teams/make/status"/>
+            <mvc:exclude-mapping path="/api/v1/teams/make"/>
+            <mvc:exclude-mapping path="/api/v1/statsincome" />
+            <bean class="suishen.libs.spring.interceptor.SuishenAuthVerificationInterceptorV2" p:verifyFlag="false">
+                <property name="oauthService" ref="oauthService" />
+            </bean>
+        </mvc:interceptor>
+
+        <mvc:interceptor>
+            <mvc:mapping path="/api/v1/tasks/socialShare" />
+            <mvc:mapping path="/api/v1/task/socialShare/**" />
+            <mvc:mapping path="/api/v1/article/view" />
+            <mvc:mapping path="/api/v1/checkin/setting" />
+            <mvc:mapping path="/api/v1/redPoint" />
+            <mvc:mapping path="/api/v1/systemMsgs" />
+            <mvc:mapping path="/api/v2/article/readPush" />
+            <bean class="suishen.libs.spring.interceptor.SuishenAuthVerificationInterceptorV2" p:verifyFlag="false">
+                <property name="oauthService" ref="oauthService" />
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>

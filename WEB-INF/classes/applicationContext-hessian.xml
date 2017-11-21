@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <bean id="hessianAppService"
+          class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+        <property name="serviceUrl">
+            <value>${hessian.api.url}/appService</value>
+        </property>
+        <property name="serviceInterface"
+                  value="suishen.eservice.api.service.IHessianAppService"/>
+        <property name="overloadEnabled">
+            <value>true</value>
+        </property>
+    </bean>
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="suishen-kuaima"/>
+
+    <!--<dubbo:protocol port="${dubbo.port}" name="dubbo"/>-->
+
+    <!-- 使用zk注册中心暴露服务地址 -->
+    <dubbo:registry address="zookeeper://zk1.dmp.com:2181?backup=zk2.dmp.com:2181,zk3.dmp.com:2181"/>
+
+
+
+    <dubbo:reference id="peacockRecommendService" interface="suishen.peacock.api.rpc.service.IPeacockRecommendService" version="kuaima" check="false" timeout="3000"/>
+</beans>

@@ -232,7 +232,8 @@ layui.define(['element', 'common'], function (exports) {
                             //
                             switch (target) {
                                 case 'refresh': //刷新当前
-                                    var src = ELEM.contentBox.find('iframe[data-id=' + id + ']')[0].src;
+                                    // var src = ELEM.contentBox.find('iframe[data-id=' + id + ']')[0].src;
+                                    var src = ELEM.contentBox.find('iframe[data-id="' + id + '"]')[0].contentWindow.location.href;
                                     ELEM.contentBox.find('iframe[data-id=' + id + ']')[0].src = src;
                                     break;
                                 case 'closeCurrent': //关闭当前

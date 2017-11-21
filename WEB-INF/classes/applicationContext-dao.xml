@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-2.5.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+    <!-- switch between local and remote deployment -->
+    <bean id="sqlConnectionManager"
+          class="suishen.framework.dao.connect.sql.MySQLSqlConnectionManager">
+        <property name="url" value="${mysql.url}"/>
+        <property name="slaveUrl" value="${mysql.slaveUrl}"/>
+        <property name="username" value="${mysql.user}"/>
+        <property name="password" value="${mysql.pwd}"/>
+        <property name="maxActive" value="64"/>
+        <property name="initialSize" value="10"/>
+        <property name="maxWait" value="3000"/>
+        <property name="maxIdle" value="32"/>
+        <property name="minIdle" value="10"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="300000"/>
+    </bean>
+
+    <bean id="dbTransManager"
+          class="suishen.framework.dao.transaction.DefaultDBTransaction">
+    </bean>
+</beans>

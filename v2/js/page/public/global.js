@@ -13,6 +13,7 @@ layui.define(['layer'], function(exports){
 	}
     var obj = {
     	formatDate: function(nS,type){
+    		if(nS==''){ return;}
 	    	var pattern = type || "yyyy-MM-dd hh:mm";
 	    	var that = new Date(parseInt(nS));
 	        var o = {
@@ -36,11 +37,16 @@ layui.define(['layer'], function(exports){
 	        return pattern;
 	    },
 	    getTimestamp:function(data,t){
-	    	if(typeof t=="boolean"&&t){
-	    		return new Date(data).getTime();
+	    	if(data==''){
+	    		return new Date().getTime();
 	    	}else{
-	    		return new Date(data+(t?' '+t:' 00:00:00')).getTime();
+		    	if(typeof t=="boolean"&&t){
+		    		return new Date(data).getTime();
+		    	}else{
+		    		return new Date(data+(t?' '+t:' 00:00:00')).getTime();
+		    	}
 	    	}
+
 	    },
 	    getQueryValue: function(key) {
 	        var q = location.search, keyValuePairs = new Array();

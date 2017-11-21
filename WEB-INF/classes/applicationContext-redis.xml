@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="${redis.pool.maxIdle}"></property>
+        <property name="minIdle" value="${redis.pool.minIdle}"></property>
+        <property name="maxWaitMillis" value="${redis.pool.maxWait}"></property>
+        <property name="minEvictableIdleTimeMillis" value="300000"></property>
+        <property name="numTestsPerEvictionRun" value="3"></property>
+        <property name="timeBetweenEvictionRunsMillis" value="60000"></property>
+        <property name="testOnBorrow" value="${redis.pool.testOnBorrow}"></property>
+        <property name="testWhileIdle" value="${redis.pool.testWhileIdle}"></property>
+        <property name="maxTotal" value="${redis.pool.maxActive}"></property>
+    </bean>
+
+    <bean id="redisTemplate" class="suishen.redis.SuishenRedisTemplate">
+        <constructor-arg index="0" value="${redis.url}"/>
+        <constructor-arg index="1" value="${redis.slaveUrl}"/>
+        <constructor-arg index="2" ref="jedisPoolConfig"/>
+        <constructor-arg index="3" value="2000"/>
+    </bean>
+
+</beans>

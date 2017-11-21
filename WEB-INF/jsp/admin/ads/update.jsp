@@ -9,10 +9,10 @@
     <c:forEach items="${applications}" var="app" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${app}"</c:forEach>
     ],
     "application":"${application}",
-    "platforms":["ANDROID","IPHONE"],
+    "platforms":[<c:forEach items="${platforms}" var="pt" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${pt}"</c:forEach>],
     "adsLocations":[
     <c:forEach items="${adsLocations}" var="adsLocation" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"location":"${adsLocation.location}","desc":"${adsLocation.desc}"}</c:forEach>
-    ]
+    ],
     "locations":[
     <c:forEach items="${locations}" var="loa" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"location":"${loa.location}","desc":"${loa.desc}"}</c:forEach>
     ],

@@ -30,7 +30,9 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 
 	/** 查询的时间设置 **/
 	var q_stime = tool.getQueryValue('startTime');
-	if(q_stime != ""){
+	if(q_stime == ""){
+		$('#q_startTime').val(laydate.now());
+	}else{
 		$('#q_startTime').val(tool.formatDate(q_stime, 'yyyy-MM-dd'));
 	}
 	$('#q_startTime').on('click', function(){
@@ -78,9 +80,8 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 		/* 统计查询的时间设置 */
 	var tj = {
 		start:{
-			max: laydate.now(),
 			min: '2016-10-01 00:00:00',
-			value: new Date(),
+			max: laydate.now(),
 			istime: true,
 			format: 'YYYY-MM-DD hh:mm:ss',
 			choose: function(d){
@@ -90,7 +91,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 		},
 		end:{
 			min: '2016-10-01 00:00:00',
-			value: new Date(),
+			max: laydate.now(),
 			istime: true,
 			format: 'YYYY-MM-DD hh:mm:ss',
 	    	choose: function(d){
@@ -105,6 +106,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 		tj.end.elem = this; laydate(tj.end);
 	});
 	/******* 时间设置结束 **********/
+
     
     /* 新增和操作处的点击 s */
     var operation = {
@@ -131,11 +133,14 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click()
+						$('#reset').click();
+						$('#fileWrap .img').remove();
+						$('#addTuPian').click();
+						dt.start.max = dt.end.max = '2099-06-16';
+						dt.end.min = dt.end.start = laydate.now();
 					}
 				});
 			});
-
     	},
     	edit: function() {
     		var id = $(this).data('id');
@@ -183,8 +188,11 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 					content: $('#formPane'),
 					cancel: function(){ 
 						$('#reset').click();
+						$('#myform input[name="id"]').attr('disabled',true);
 						$('#fileWrap .img').remove();
 						$('#addTuPian').click();
+						dt.start.max = dt.end.max = '2099-06-16';
+						dt.end.min = dt.end.start = laydate.now();
 					}
 				});
 			});
@@ -237,20 +245,12 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	        	});
 			});
     	},
-    	tongji: function() {
-    		var id = $(this).data('id');
+    	viewTj: function(hasOpen,opt){
     		var size = operation.con_size;
-    		$('#updateBtn').hide();
-    		//加载新增所需数据
     		tool.getJspData({
     			url:'/km_task/admin/ads/tj',
-    			data:{id:id}
+    			data:opt
     		},function(data){
-    			var t_day = new Date().toLocaleDateString().replace(/\//g,'-');
-    			$('#startTimeTj').val(t_day+' 00:00:00');
-    			$('#endTimeTj').val(t_day+' 23:59:59');
-    			$('#id').val(id);
-    			console.log(data);
     			var ad = data.ad,str='';
     			$('#tjAdTitle').html('<a href="'+ad.originUrl+'">'+ad.title+'</a>');
     			if(data.tjData.length==0){
@@ -262,17 +262,27 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	    			};
     			}
     			$('#tjAdData').html(str);
-				layer.open({
-					title:'统计',
-					type: 1,
-					skin: 'layui-layer-rim', 
-					area: [ size.w, size.h], 
-					content: $('#formPane2'),
-					cancel: function(){ 
-						$('#reset').click()
-					}
-				});
+    			if(!hasOpen){
+	    			var t_day = new Date().toLocaleDateString().replace(/\//g,'-');
+	    			$('#startTimeTj').val(t_day+' 00:00:00');
+	    			$('#endTimeTj').val(t_day+' 23:59:59');
+	    			$('#id').val(opt.id);
+					layer.open({
+						title:'统计',
+						type: 1,
+						skin: 'layui-layer-rim', 
+						area: [ size.w, size.h], 
+						content: $('#formPane2'),
+						cancel: function(){ 
+							$('#reset').click()
+						}
+					});
+    			}
     		});
+    	},
+    	tongji: function() {
+    		var id = $(this).data('id');
+    		operation.viewTj(false,{id:id});
     	}
     }
 	$('.js-operation').on('click', function(){
@@ -427,23 +437,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 			id = d.id,
 	    	s_time = tool.getTimestamp(d.startTime, true),
 	    	e_time = tool.getTimestamp(d.endTime, true);
-		tool.getJspData({
-			url:'/km_task/admin/ads/tj',
-			data:{id:id,startTime:s_time,endTime:e_time}
-		},function(data){
-			console.log(data);
-			var ad = data.ad,str='';
-			$('#tjAdTitle').html('<a href="'+ad.originUrl+'">'+ad.title+'</a>');
-			if(data.tjData.length==0){
-				str = '<tr><td colspan="5">暂时没有数据</td></tr>';
-			}else{
-				for (var i = 0; i < data.tjData.length; i++) {
-					var d = data.tjData[i];
-					str+='<tr><td>'+d.date+'</td><td>'+d.uv+'</td><td>'+d.viewNum+'</td><td>'+d.click+'</td><td>'+d.clickUser+'</td></tr>'
-				};
-			}
-			$('#tjAdData').html(str);
-		});
+	    operation.viewTj(true,{id:id,startTime:s_time,endTime:e_time});
 		return false;
 	})
 		

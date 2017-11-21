@@ -2,17 +2,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="suishen_fmt" uri="suishen.libs/fmt" %>
-<jsp:include page="../header.jsp" />
-<jsp:include page="../sidebar.jsp" />
-<!-- 页面 -->
-<div id="main-content" class="clearfix">
-    <div id="page-content" class="clearfix">
-        <div class="page-header position-relative">
-            <h1>新增弹窗</h1>
-        </div>
-        <div class="row-fluid">
-            <div class="row-fluid">
-                <form action="admin/popup/add" method="post" id="basic_validate" name="basic_validate" class="form-horizontal" novalidate="novalidate">
+
+<em>
+    {
+    "popupLocations":[<c:forEach items="${popupLocations}" var="pl" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"location":"${pl.location}","desc":"${pl.desc}"}</c:forEach>
+    ],
+    "userGroups":[<c:forEach items="${userGroups}" var="userGroup" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"group":"${userGroup.group}","groupName":"${userGroup.groupName}"}</c:forEach>
+    ],
+    "platforms":[<c:forEach items="${platforms}" var="pt" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${pt}"</c:forEach>]
+    }
+</em>
+
+               <!--  <form action="admin/popup/add" method="post" id="basic_validate" name="basic_validate" class="form-horizontal" novalidate="novalidate">
                     <div class="control-group">
                         <label class="control-label">弹窗标题(可选)</label>
                         <div class="controls">
@@ -122,45 +123,4 @@
                             <i class="icon-undo"></i> 取消
                         </button>
                     </div>
-                </form>
-            </div>
-         </div>
-    </div>
-</div>
-<jsp:include page="../foot.jsp" />
-    <link rel="stylesheet" href="assets/css/setting.css"/>
-    <script type="text/javascript" src="assets/js/setting.js"></script>
-    <script type="text/javascript" src="assets/js/setting_add_topic.js"></script>
-    <script type="text/javascript" src="assets/js/ajaxfileupload.js"></script>
-</body>
-<script>
-    $("#menu_app").addClass('active open');
-    $("#menu_popup").addClass('active');
-    function cancel() {
-        location.reload();
-    }
-
-    if($("#startTime").length > 0){
-        $("#startTime").val(new Date().format("yyyy-MM-dd")+" 00:00:00");
-        $("#endTime").val(new Date().format("yyyy-MM-dd")+" 23:59:59");
-        gx();
-        $("#startTime").slTime({
-            callback:function(){
-                gx();
-            }
-        });
-        $("#endTime").slTime({
-            callback:function(){
-                gx();
-            }
-        });
-    }
-
-    function gx(){
-        var start = new Date($("#startTime").val().replace(/-/g,   "/")).getTime();
-        var end = new Date($("#endTime").val().replace(/-/g,   "/")).getTime();
-        $("#start_time_hidden").val(start);
-        $("#end_time_hidden").val(end);
-    }
-</script>
-</html>
+                </form> -->

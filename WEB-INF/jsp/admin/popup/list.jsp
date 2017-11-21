@@ -148,12 +148,12 @@
                         <td><suishen_fmt:formatDate value="${popup.endTime}" /></td>
                         <td><suishen_fmt:formatDate value="${popup.addedTime}" /></td>
                         <td class="option">
-                            <a class="js-operation" data-type="edit" data-id="${ad.id}" href="javascript:;">编辑</a>
+                            <a class="js-operation" data-type="edit" data-id="${popup.id}" href="javascript:;">编辑</a>
                             <c:if test="${popup.status == 1 || popup.status == 0}">
-                                <a class="js-operation" data-type="up" data-id="${ad.id}" href="javascript:;">上架</a>
+                                <a class="js-operation" data-type="up" data-id="${popup.id}" href="javascript:;">上架</a>
                             </c:if>
                             <c:if test="${popup.status == 2}">
-                                <a class="js-operation" data-type="down" data-id="${ad.id}" href="javascript:;">下架</a>
+                                <a class="js-operation" data-type="down" data-id="${popup.id}" href="javascript:;">下架</a>
                             </c:if>
                         </td>
                     </tr>
@@ -169,6 +169,89 @@
     <!-- 表单 -->
     <div id="formPane" style="display: none;padding: 10px;">
         <form id="myform" class="layui-form layui-form-pane1" action="">
+            <input type="hidden" name="id" disabled>
+            <div class="layui-form-item">
+                <label class="layui-form-label">弹窗标题<br>(可选)</label>
+                <div class="layui-input-block">
+                     <input type="text" id="title" name="title" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片</label>
+                <div class="layui-input-block file">
+                    <div class="layui-upimg img">
+                        <img src="" class="hide" />
+                        <span><i class="layui-icon">&#xe608;</i>上传图片</span>
+                        <input type="file" name="file">
+                    </div>
+                </div>
+                <input type="hidden" name="image" id="image" class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">弹窗标题<br>(需以http://开头)</label>
+                <div class="layui-input-block">
+                     <input type="text" id="url" name="url" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">投放平台</label>
+                <div class="layui-input-block">
+                    <select name="platform" id="platform">
+                        <option value="">DEFAULT</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">投放位置</label>
+                <div class="layui-input-block">
+                    <select name="location" id="location">
+                        <option value="">DEFAULT</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">用户组</label>
+                <div class="layui-input-block">
+                    <select name="userGroups" id="userGroups">
+                        <option value="">所有用户</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-block">
+                    <input class="layui-input" id="startTime" placeholder="开始时间"/>
+                    <input type="hidden" name="start_time">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+                    <input class="layui-input" id="endTime" placeholder="结束时间"/>
+                    <input type="hidden" name="end_time">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">弹窗次数<br>(开始-结束时间)</label>
+                <div class="layui-input-block">
+                     <input type="text" id="num" name="num" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">是否登录才能点击</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" lay-filter="needLogin" id="needLoginShow" lay-skin="switch" lay-text="是|否">
+                    <input type="hidden" id="needLogin" name="needLogin" value="0" />  
+                </div>
+            </div>
+
+            <div class="layui-form-item t-r" id="addBtn">
+                <div class="layui-btn" lay-submit lay-filter="add">新增</div>
+            </div>
+            <div class="layui-form-item t-r" id="updateBtn">
+                <div class="layui-btn" lay-submit lay-filter="update">修改</div>
+            </div>
+            <button type="reset" id="reset" class="layui-hide">重置</button>
         </form>
     </div>
 <script>

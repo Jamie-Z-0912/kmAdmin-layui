@@ -2,19 +2,29 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	var $ = layui.jquery, 
 		layer = layui.layer,
         laypage = layui.laypage,
-		form = layui.form(), 
-		laydate = layui.laydate;
-		
-    /*分页*/
+		layform = layui.form(), 
+		laydate = layui.laydate,
+		tool = layui.global;
+
+	var totalPage = parseInt($('#totalPage').text()),
+		curPage = parseInt($('#curPage').text());
 	laypage({
-		cont: 'page', pages: 100, groups: 5, skip: true, curr: 1,
+		cont: 'page', pages: totalPage, groups: 5, skip: true, curr: curPage,
         jump: function(obj){
-        	var that = this;
-            console.log(obj.curr) //当前查询的页数
-            //数据查询
-	            //查询结果中的总页数是total
-	            var total=100;
-	            that.pages = total;
+            var page = tool.getQueryValue('page');
+            var cur_href =  window.location.href;
+            if(page==""){ page=1; }
+            if(obj.curr!=page){
+            	if(/\?/.test(cur_href)){
+            		if(/page=/.test(cur_href)){
+            			window.location = cur_href.split('page=')[0] +'page='+obj.curr;
+            		}else{
+            			window.location = cur_href+'&page='+obj.curr;
+            		}
+            	}else{
+            		window.location = cur_href +'?page='+obj.curr;
+            	}
+            }
         }
     });
     /* 增加和操作处的点击 s */
@@ -38,6 +48,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 			});
     	},
     	edit: function() {
+    		//admin/systemMsg/update?id=${systemMsg.id}
     		var size = operation.con_size;
     		$('#addBtn').hide();
 			layer.open({
@@ -52,10 +63,27 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 			});
     	},
     	del: function() {
+    		//admin/systemMsg/delete?id=${systemMsg.id}
     		console.log('删除')
     	},
     	send: function() {
     		console.log('发送')
+    		var id = $(this).data('id'),
+    			app =  $(this).data('app'),
+    			pla =  $(this).data('pla'),
+    			ver =  $(this).data('ver');
+    		var str = '确认要给应用：'+(app==''?'默认':app)+ ",平台: " + pla + ",版本:" + ver + "发送通知?";
+    		layer.confirm(str, {
+				btn: ['确定','取消'] //按钮
+			}, function(){
+			    tool.baseAjax({
+	        		url: '/km_task/admin/systemMsg/push',
+	        		data:{id:id},
+	        		type:'post'
+	        	},function(d){
+	        		d.status==1000?location.reload():alert("发送失败！");
+	        	});
+			});
     	}
     }
 	$('.js-operation').on('click', function(){
@@ -63,19 +91,41 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	    operation[type].call(this);
 	});
 	/* 增加和操作处的点击 e */
-
-
+	
 	//监听提交
-	form.on('submit(check)', function(data){
-	    console.log(data)
+	layform.on('submit(check)', function(data){
+		var d = data.field,
+			application = d.application,
+	    	platform = d.platform;
+	    window.location = '/km_task/admin/systemMsg/list?application='+application+'&platform='+platform;
 	    return false;
 	});
-	form.on('submit(add)', function(data){
-	    console.log(data)
+	layform.on('submit(add)', function(data){
+		tool.submit({
+            url: '/km_task/admin/systemMsg/add',
+            type: 'post',
+            data: $('#myform')
+        }, function(data){
+        	if(/<div class="admin-main">/.test(data)){
+        		location.reload();
+        	}else{
+        		layer.msg(data, { icon: 2, shift: 6});
+        	}
+        });	
 	    return false;
 	});
-	form.on('submit(update)', function(data){
-	    console.log(data)
+	layform.on('submit(update)', function(data){
+		tool.submit({
+            url: '/km_task/admin/systemMsg/update',
+            type: 'post',
+            data: $('#myform')
+        }, function(data){
+        	if(/<div class="admin-main">/.test(data)){
+        		location.reload();
+        	}else{
+        		layer.msg(data, { icon: 2, shift: 6});
+        	}
+        });	
 	    return false;
 	});
 		

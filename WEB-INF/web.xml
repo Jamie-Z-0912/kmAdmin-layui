@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="WebApp_ID"
+         version="3.0"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>Kuaima Task</display-name>
+
+    <context-param>
+        <param-name>suishen-webap-config</param-name>
+        <param-value>classpath:suishen-webap.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>suishen.webap.startup.WebapListener</listener-class>
+    </listener>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:suishen-dao-common.xml
+            classpath:applicationContext-dao.xml
+            classpath:applicationContext-cache.xml
+            classpath:applicationContext-redis.xml
+            classpath:applicationContext-authFilter.xml
+            classpath:applicationContext-globalSession.xml
+            classpath:applicationContext-ip.xml
+            classpath:applicationContext-core.xml
+            classpath:applicationContext-quartz.xml
+            classpath:applicationContext-hessian.xml
+        </param-value>
+    </context-param>
+
+    <!-- Listener Config -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- Character Encoding Filter -->
+    <filter>
+        <filter-name>Set Character Encoding</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>Set Character Encoding</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <description>用于把jsessionid去掉</description>
+        <filter-name>disableUrlSessionFilter</filter-name>
+        <filter-class>suishen.libs.web.filter.DisableUrlSessionFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>disableUrlSessionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <description>认证filter</description>
+        <filter-name>suishenAuthenticationFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>suishenAuthenticationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <description>用于cas进行ticket validate</description>
+        <filter-name>suishenCasValidateFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>suishenCasValidateFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>mvc-dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:mvc-dispatcher-servlet-spec.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Config JwebAp Filter -->
+    <filter>
+        <filter-name>PageDetectFilter</filter-name>
+        <filter-class>suishen.webap.plugin.tracer.http.DetectFilter</filter-class>
+        <init-param>
+            <param-name>excludeUrls</param-name>
+            <param-value>/detect;/detect/*;*.js;*.jpg;*.htm;*.html;*.gif;*.png;*.css;*.swf</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>PageDetectFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>DetectIpSecurityFilter</filter-name>
+        <filter-class>suishen.libs.web.filter.IpSecutiryFilter</filter-class>
+        <init-param>
+            <param-name>allowIps</param-name>
+            <param-value>127.0.0.1;192.168.*.*;118.194.246.*;172.16.0.*;218.94.89.*;58.240.82.*</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>DetectIpSecurityFilter</filter-name>
+        <url-pattern>/detect/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>detect</servlet-name>
+        <servlet-class>suishen.webap.ui.controller.WebapServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>detect</servlet-name>
+        <url-pattern>/detect/*</url-pattern>
+    </servlet-mapping>
+    <!-- end -->
+
+    <servlet-mapping>
+        <servlet-name>mvc-dispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error/404.xml</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error/500.xml</location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/error/403.xml</location>
+    </error-page>
+</web-app>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+    <task:scheduler id="suishenScheduler" pool-size="8"/>
+    <task:scheduled-tasks scheduler="suishenScheduler">
+        <!--完成已过期的分享任务订单,每隔5分钟执行一次-->
+        <task:scheduled ref="shareTaskOrderService" method="completeExpiredAndSelloutOrders" cron="0 0/5 * * * ?"/>
+        <!--处理任务浏览记录,每隔20秒执行一次-->
+        <task:scheduled ref="taskViewLogService" method="handleTaskViewLog" cron="*/20 * * * * ?"/>
+        <!--保存文章阅读事件,每隔10秒执行一次-->
+        <task:scheduled ref="userReadService" method="handleReadEvent" cron="*/10 * * * * ?"/>
+
+        <!--创建评论消息,每隔10min-->
+        <task:scheduled ref="commentsService" method="createCommentedMsg" cron="0 0/10 * * * ?"/>
+        <!--发送消息 每隔5min-->
+        <task:scheduled ref="pushService" method="doPush" cron="0 0/5 * * * ?"/>
+        <!--处理金币事件 每隔2秒-->
+        <task:scheduled ref="coinEventService" method="doOperation" cron="*/2 * * * * ?"/>
+        <!--处理浏览器签到 每隔3秒-->
+        <task:scheduled ref="checkinService" method="doCheckin" cron="*/2 * * * * ?"/>
+        <!--更新首页feed,每隔1min执行一次-->
+        <task:scheduled ref="timelineService" method="updateTimeline" cron="0 0/1 * * * ?"/>
+
+        <!--金币兑换零钱,每日0点5分-->
+        <task:scheduled ref="coinExchangeService" method="doExchange" cron="0 5 0 * * ?"/>
+        <!--金币兑换补偿，每60min执行一次-->
+        <task:scheduled ref="coinExchangeService" method="doMakeupCoinExchangeJob" cron="0 0/60 * * * ?"/>
+        <!--实时统计今日金币收益排行 每20分钟-->
+        <task:scheduled ref="coinService" method="statToday" cron="0 0/20 * * * ?"/>
+        <!--统计昨日金币收益排行 每日零点1分-->
+        <task:scheduled ref="coinService" method="statYesterday" cron="0 1 0 * * ?"/>
+        <!--更新好友列表数据，每隔60min执行一次-->
+        <task:scheduled ref="inviteRelationService" method="updateInviteFriendsData" cron="0 0/60 * * * ?"/>
+        <!--更新文章阅读、评论数，每隔10min执行一次-->
+        <task:scheduled ref="articleCountService" method="updateTjNum" cron="0 0/10 * * * ?"/>
+        <!--更新采集阅读、评论、点赞数，每隔10min执行一次-->
+        <task:scheduled ref="postCountService" method="updateTjNum" cron="0 0/10 * * * ?"/>
+
+        <!--自动使用阅读加速卡，每隔10s执行一次-->
+        <task:scheduled ref="userCardsService" method="autoUseReadCard" cron="*/10 * * * * ?"/>
+        <!--自动推送系统消息，每隔5min执行一次-->
+        <task:scheduled ref="systemMsgsService" method="autoPush" cron="0 0/1 * * * ?"/>
+        <!--自动抓取文章，每隔15s执行一次-->
+        <task:scheduled ref="postAutoFetchService" method="autoFetch" cron="*/60 * * * * ?"/>
+        <!--采集算法 清洗数据-->
+        <task:scheduled ref="postWashService" method="execute" cron="0 0/10 * * *  ?"/>
+        <!--用户召回-->
+        <task:scheduled ref="recallPlanService" method="doRecallJob" cron="0 0/20 * * *  ?"/>
+        <!--兑换资源,奖励金币-->
+        <task:scheduled ref="postOrderService" method="handlePostRewardJob" cron="0 0/5 * * *  ?"/>
+
+        <!--自动审核采集用户申请，每15min执行一次-->
+        <task:scheduled ref="zhdkInitialUserApplyService" method="autoPassJob" cron="0 0/15 * * * ?"/>
+
+        <!--团队分红计算,每日23点0分-->
+        <task:scheduled ref="teamCalService" method="doCal" cron="30 0 23 * * ?"/>
+
+        <!--定时发送不劳而获推送,每日8点5分-->
+        <task:scheduled ref="teamPushService" method="doRemindNoContribute" cron="30 30 8 * * ?"/>
+
+        <!--团队数据统计,每日23点55分-->
+        <task:scheduled ref="teamCalService" method="teamDayCollect" cron="0 55 23 * * ?"/>
+
+        <!--定时更新运营活动奖励-->
+        <task:scheduled ref="optActivityService" method="doCaculateActRewardJob" cron="0 0/59 * * * ?"/>
+
+        <!--快速组队，每隔30s执行一次-->
+        <task:scheduled ref="teamMakeService" method="doTeamMake" cron="0/30 * * * * ?"/>
+    </task:scheduled-tasks>
+</beans>

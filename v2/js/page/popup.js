@@ -28,28 +28,22 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
         }
     });
 
-	var tDay = new Date(),
-		q_stime = tool.getQueryValue('start_time'),
-		q_etime = tool.getQueryValue('end_time');
-
+	var q_stime = tool.getQueryValue('startTime'),
+		q_etime = tool.getQueryValue('endTime');
 	if(q_stime == ""){
-		// var today = tDay.toLocaleDateString().split('/');
-		// $('#q_startTime').val(today[0]+'-'+today[1]+'-01');
+		$('#q_startTime').val(laydate.now());
 	}else{
 		$('#q_startTime').val(tool.formatDate(q_stime, 'yyyy-MM-dd'));
 	}
 	if(q_etime == ""){
-		// $('#q_endTime').val(tDay.toLocaleDateString().replace(/\//g,'-'));
+		$('#q_endTime').val(laydate.now());
 	}else{
 		$('#q_endTime').val(tool.formatDate(q_etime , 'yyyy-MM-dd'));
 	}
 	/* 查询的 开始和结束时间 */
 	var query = {
 		start:{
-			max: laydate.now(),
 			min: '2016-10-01',
-			value: new Date(),
-			istime: false,
 			format: 'YYYY-MM-DD',
 			choose: function(datas){
 				query.end.min = datas;
@@ -58,8 +52,6 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 		},
 		end:{
 			min: '2016-10-01',
-			max: laydate.now(),
-			value: laydate.now(),
 			istime: false,
 			format: 'YYYY-MM-DD',
 	    	choose: function(datas){
@@ -75,7 +67,36 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 		query.end.elem = this;
 	    laydate(query.end);
 	});
-	/* 查询的 开始和结束时间 e */
+		/* 增加修改的时间设置 */
+	var dt = {
+		start:{
+			min: laydate.now(),
+			max: '2099-06-16',
+			istoday: false,
+			format: 'YYYY-MM-DD',
+			choose: function(d){
+				dt.end.min = d; //开始日选好后，重置结束日的最小日期
+				dt.end.start = d; //将结束日的初始值设定为开始日
+				$('#startTime').next().val(tool.getTimestamp(d));
+			}
+		},
+		end:{
+	    	min: laydate.now(),
+	    	max: '2099-06-16',
+	    	istoday: false,
+			format: 'YYYY-MM-DD',
+	    	choose: function(d){
+	      		dt.start.max = d; //结束日选好后，重置开始日的最大日期
+				$('#endTime').next().val(tool.getTimestamp(d,'23:59:59'));
+	    	}
+	  	}
+	}
+	$('#startTime').on('click', function(){
+		dt.start.elem = this; laydate(dt.start);
+	});
+	$('#endTime').on('click', function(){
+	    dt.end.elem = this; laydate(dt.end);
+	});
     
     /* 增加和操作处的点击 s */
     var operation = {
@@ -86,37 +107,75 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     	add: function() {
     		var size = operation.con_size;
     		$('#updateBtn').hide();
-    		//admin/popup/add?application=" + v;
-			layer.open({
-				title:'新增弹窗',
-				type: 1,
-				skin: 'layui-layer-rim', 
-				area: [ size.w, size.h], 
-				content: $('#formPane'),
-				cancel: function(){ 
-					$('#reset').click();
-					editDate.end.min = laydate.now();
-					editDate.end.start = '2099-06-16 23:59:59';
-					query.start.max = '2099-06-16 23:59:59';
-				}
-			});
+    		tool.getJspData({
+    			url:'/km_task/admin/popup/add'
+    		},function(data){
+    			console.log(data)
+				tool.handleSelect($('#platform'),data.platforms);
+				tool.handleSelect($('#location'),data.popupLocations,'location','desc');
+				tool.handleSelect($('#userGroups'),data.userGroups,'group','groupName');
+				layform.render('select');
+				layer.open({
+					title:'新增弹窗',
+					type: 1,
+					skin: 'layui-layer-rim', 
+					area: [ size.w, size.h], 
+					content: $('#formPane'),
+					cancel: function(){ 
+						$('#reset').click();
+						dt.start.max = dt.end.max = '2099-06-16';
+						dt.end.min = dt.end.start = laydate.now();
+					}
+				});
+    		})
     	},
     	edit: function() {
-    		//admin/popup/update/${popup.id}
+    		var id = $(this).data('id');
     		var size = operation.con_size;
     		$('#addBtn').hide();
-			layer.open({
-				title:'修改弹窗',
-				type: 1,
-				skin: 'layui-layer-rim', 
-				area: [ size.w, size.h], 
-				content: $('#formPane'),
-				cancel: function(){ 
-					$('#reset').click();
-					editDate.end.min = laydate.now();
-					editDate.end.start = '2099-06-16 23:59:59';
-					query.start.max = '2099-06-16 23:59:59';
+    		tool.getJspData({
+    			url:'/km_task/admin/popup/update/'+id,
+    		},function(data){
+    			console.log(data);
+    			var pop = data.popup;
+				tool.handleSelect($('#platform'),data.platforms);
+				tool.handleSelect($('#location'),data.popupLocations,'location','desc');
+				tool.handleSelect($('#userGroups'),data.userGroups,'group','groupName');
+				if(pop.needLogin=="true"){
+					$('#needLogin').val(1);
+					$('#needLoginShow').attr('checked',true);
+				}else{
+					$('#needLogin').val(0);
 				}
+				layform.render();
+				$('#myform input[name="id"]').val(pop.id).attr('disabled',false);
+				$('#title').val(pop.title);
+				$('#image').val(pop.image);
+				$('.img img').attr('src',pop.image).removeClass('hide');
+				$('#platform').val(pop.platform);
+				$('#location').val(pop.location);
+				$('#userGroups').val(pop.userGroups);
+				$('#url').val(pop.url);
+				$('#num').val(pop.num);
+				$('#startTime').val(tool.formatDate(pop.startTime, 'yyyy-MM-dd'))
+					.next().val(pop.startTime);
+				$('#endTime').val(tool.formatDate(pop.endTime, 'yyyy-MM-dd'))
+					.next().val(pop.endTime);
+
+				layer.open({
+					title:'修改弹窗',
+					type: 1,
+					skin: 'layui-layer-rim', 
+					area: [ size.w, size.h], 
+					content: $('#formPane'),
+					cancel: function(){ 
+						$('#reset').click();
+						$('#myform input[name="id"]').attr('disabled',true);
+						$('.img img').attr('src','').addClass('hide');
+						dt.start.max = dt.end.max = '2099-06-16';
+						dt.end.min = dt.end.start = laydate.now();
+					}
+				});
 			});
     	},
     	up: function(){
@@ -139,7 +198,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     	down: function(){
     		var id = $(this).data('id');
     		layer.confirm('您确认要下架此弹窗吗？', {
-				btn: ['确定','取消'] //按钮
+				btn: ['确定','取消']
 			}, function(){
 	        	tool.baseAjax({
 	        		url: '/km_task/admin/popup/down',
@@ -158,68 +217,14 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	    var type = $(this).data('type');
 	    operation[type].call(this);
 	});
-	/* 增加和操作处的点击 e */
-	var editDate = {
-		start:{
-			min: laydate.now(),
-			max: '2099-06-16 23:59:59',
-			start: '2014-6-15 23:00:00',
-			istime: true,
-			format: 'YYYY-MM-DD hh:mm:ss',
-			choose: function(datas){
-				editDate.end.min = datas; //开始日选好后，重置结束日的最小日期
-				editDate.end.start = datas //将结束日的初始值设定为开始日
-			}
-		},
-		end:{
-	    	min: laydate.now(),
-	    	max: '2099-06-16 23:59:59',
-			istime: true,
-			format: 'YYYY-MM-DD hh:mm:ss',
-	    	choose: function(datas){
-	      		editDate.start.max = datas; //结束日选好后，重置开始日的最大日期
-	    	}
-  		}
-	}
-	$('#startTime').on('click', function(){
-	    editDate.start.elem = this;
-	    laydate(editDate.start);
-	});
-	$('#endTime').on('click', function(){
-	    editDate.end.elem = this
-	    laydate(editDate.end);
-	})
-	
-	/* 查询的 开始和结束时间 */
-	var query = {
-		start:{
-			min: laydate.now(),
-			max: '2099-06-16',
-			start: '2014-6-15',
-			format: 'YYYY-MM-DD',
-			choose: function(datas){
-				query.end.min = datas; //开始日选好后，重置结束日的最小日期
-				query.end.start = datas //将结束日的初始值设定为开始日
-			}
-		},
-		end:{
-	    	min: laydate.now(),
-	    	max: '2099-06-16',
-			format: 'YYYY-MM-DD',
-	    	choose: function(datas){
-	      		query.start.max = datas; //结束日选好后，重置开始日的最大日期
-	    	}
-  		}
-	}
-	$('#q_startTime').on('click', function(){
-		query.start.elem = this;
-	    laydate(query.start);
-	})
-	$('#q_endTime').on('click', function(){
-		query.end.elem = this;
-	    laydate(query.end);
-	});
-	/* 查询的 开始和结束时间 e */
+	layform.on('switch(needLogin)', function(data){
+		if(this.checked){
+			$('#needLogin').val('1');
+		}else{
+			$('#needLogin').val('0');
+		}
+  	});
+
 	/* 上传图片方法 s */
 	layui.upload({
 		elem:'input[type="file"]',
@@ -227,13 +232,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
         	console.log('文件上传中');
         },
         after: function(d){
-        	console.log(d);
-        	var imgs = $('#images').val();
-        	if(imgs == ''){
-        		$('#images').val(d.data.url);
-        	}else{
-        		$('#images').val(imgs+','+d.data.url);
-        	}
+        	$('#image').val(d.data.url);
         }
 	});
     /* 上传图片方法 end */
@@ -250,11 +249,31 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	    return false;
 	});
 	layform.on('submit(add)', function(data){
-	    console.log(data)
+		tool.submit({
+            url: '/km_task/admin/popup/add',
+            type: 'post',
+            data: $('#myform')
+        }, function(data){
+        	if(/<div class="admin-main">/.test(data)){
+        		location.reload();
+        	}else{
+        		layer.msg(data, { icon: 2, shift: 6});
+        	}
+        });	
 	    return false;
 	});
 	layform.on('submit(update)', function(data){
-	    console.log(data)
+		tool.submit({
+            url: '/km_task/admin/popup/update',
+            type: 'post',
+            data: $('#myform')
+        }, function(data){
+        	if(/<div class="admin-main">/.test(data)){
+        		location.reload();
+        	}else{
+        		layer.msg(data, { icon: 2, shift: 6});
+        	}
+        });	
 	    return false;
 	});
 		
