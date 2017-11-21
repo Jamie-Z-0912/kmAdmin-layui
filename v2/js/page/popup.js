@@ -194,10 +194,9 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	var query = {
 		start:{
 			min: laydate.now(),
-			max: '2099-06-16 23:59:59',
-			start: '2014-6-15 23:00:00',
-			istime: true,
-			format: 'YYYY-MM-DD hh:mm:ss',
+			max: '2099-06-16',
+			start: '2014-6-15',
+			format: 'YYYY-MM-DD',
 			choose: function(datas){
 				query.end.min = datas; //开始日选好后，重置结束日的最小日期
 				query.end.start = datas //将结束日的初始值设定为开始日
@@ -205,9 +204,8 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 		},
 		end:{
 	    	min: laydate.now(),
-	    	max: '2099-06-16 23:59:59',
-			istime: true,
-			format: 'YYYY-MM-DD hh:mm:ss',
+	    	max: '2099-06-16',
+			format: 'YYYY-MM-DD',
 	    	choose: function(datas){
 	      		query.start.max = datas; //结束日选好后，重置开始日的最大日期
 	    	}
@@ -247,7 +245,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	    	location = d.location,
 	    	status = d.status,
 	    	s_time =  tool.getTimestamp(d.startTime),
-	    	e_time =  tool.getTimestamp(d.endTime);
+	    	e_time =  tool.getTimestamp(d.endTime,' 23:59:59');
 		window.location = '/km_task/admin/popup/list?platform='+platform+'&location='+location+'&status='+status+'&startTime='+s_time+'&endTime='+e_time;
 	    return false;
 	});

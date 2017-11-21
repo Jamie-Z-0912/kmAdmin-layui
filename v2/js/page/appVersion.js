@@ -19,19 +19,8 @@ layui.define(['global', 'form', 'laydate'], function(exports){
     		},function(data){
     			console.log(data);
 				//将数据写入form
-				var str='';
-				for (var i = 0; i < data.applications.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.applications[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#application').html(str);
-				for (var i = 0; i < data.platforms.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.platforms[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#platform').html(str);
+				tool.handleSelect($('#application'),data.applications);
+				tool.handleSelect($('#platform'),data.platforms);
 				layform.render('select');
 				layer.open({
 					title:'广告位开关添加',
@@ -57,21 +46,13 @@ layui.define(['global', 'form', 'laydate'], function(exports){
     		},function(data){
     			console.log(data);
 				//将数据写入form
-				var a_str='', p_str='';
-				for (var i = 0; i < data.applications.length; i++) {
-					var cur_v = data.applications[i];
-					if(data.application==""){ a_str += '<option value="">默认</option>'; }
-					a_str += '<option value="'+ cur_v +'"'+ (cur_v==data.application?' selected':'') +'>'+ cur_v +'</option>'; 
-				};
-				$('#application').html(a_str);
-				for (var i = 0; i < data.platforms.length; i++) {
-					var cur_v = data.platforms[i];
-					p_str += '<option value="'+ cur_v +'"'+ (cur_v==data.platform?' selected':'') +'>'+ cur_v +'</option>'; 
-				};
-				$('#platform').html(p_str);
+				tool.handleSelect($('#application'),data.applications);
+				tool.handleSelect($('#platform'),data.platforms);
 				layform.render('select');
 
 				$('#id').val(data.id);
+				$('#application').val(data.application);
+				$('#platform').val(data.platform);
 				$('#added_time').val(tool.formatDate(data.addedTime, 'yyyy-MM-dd'))
 					.next().val(data.addedTime);
 				$('#version').val(data.version);
@@ -111,8 +92,8 @@ layui.define(['global', 'form', 'laydate'], function(exports){
 			max: laydate.now(),
 			min: '2016-10-01',
 			format: 'YYYY-MM-DD',
-			choose: function(datas){
-				$('#added_time').next().val(tool.getTimestamp(datas));
+			choose: function(d){
+				$('#added_time').next().val(tool.getTimestamp(d));
 			}
 		};
 

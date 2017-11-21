@@ -19,6 +19,7 @@ layui.define(['global', 'form', 'upload'], function(exports){
     		},function(data){
     			console.log(data);
 				//将数据写入form
+				tool.handleSelect($('#application'),data.applications);
 				var str = '';
 				for (var i = 0; i < data.platforms.length; i++) {
 					i===0&&(str='');
@@ -26,12 +27,6 @@ layui.define(['global', 'form', 'upload'], function(exports){
 					str += '<input type="checkbox" title="'+cur_v+'" value="'+cur_v+'" lay-filter="platform">';
 				};
 				$('#platforms').html(str);
-				for (var i = 0; i < data.applications.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.applications[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#application').html(str);
 				for (var i = 0; i < data.layouts.length; i++) {
 					i===0&&(str='');
 					var cur_v = data.layouts[i];
@@ -74,18 +69,13 @@ layui.define(['global', 'form', 'upload'], function(exports){
     			data:{id:id}
     		},function(data){
     			console.log(data);
-				var a_str='';
-				for (var i = 0; i < data.applications.length; i++) {
-					var cur_v = data.applications[i];
-					if(data.application==""){ a_str += '<option value="">默认</option>'; }
-					a_str += '<option value="'+ cur_v +'"'+ (cur_v==data.application?' selected':'') +'>'+ cur_v +'</option>'; 
-				};
-				$('#application').html(a_str);
+				tool.handleSelect($('#application'),data.applications);
 				layform.render('select');
+
 				$('#platforms,#versions,#layouts,#adsTypes').hide();
 				$('#location').val(data.adLocation.location).attr('disabled',true);
 				$('#desc').val(data.adLocation.desc);
-
+				$('#application').val(data.application);
 				$('#platform,#version,#layout,#adsType').attr('type','text').parent().removeClass('layui-hide');
 				$('#platform').val(data.adLocation.platform);
 				$('#version').val(data.adLocation.version);

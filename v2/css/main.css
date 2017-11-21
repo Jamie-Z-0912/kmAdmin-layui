@@ -32,7 +32,8 @@
     position: absolute;
     width: 100%;
     display: block;
-    z-index: 1;
+    z-index: 4;
+    opacity: 0;
     padding: 25px 0;
     line-height: 45px;
     height: 45px;
@@ -43,6 +44,14 @@
     color: #1aa094;
     font-size: 20px;
     margin-right: 5px;
+}
+.layui-form .layui-upimg i.js-del{
+    display: block;
+    position: absolute;
+    right: 0;
+    z-index: 100;
+    cursor: pointer;
+    opacity: 0;
 }
 .layui-form .add-upimg{  
     position: relative;  
@@ -66,7 +75,8 @@
     z-index: 99;
 }
 .layui-form .layui-upimg:hover {border-color: #ddd;}
-.layui-form .layui-upimg:hover span, .layui-form .layui-upimg img.hide~span{z-index: 4;}
+.layui-form .layui-upimg:hover i.js-del,
+.layui-form .layui-upimg:hover span, .layui-form .layui-upimg img.hide~span{opacity: 1;}
 
 .layui-form input:disabled{background-color: #eee;pointer-events: none; cursor: not-allowed;}
 .layui-form label.w40{ width: 56px;}

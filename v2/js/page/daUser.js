@@ -58,7 +58,7 @@ layui.define(['global', 'form', 'laydate'], function(exports){
     var operation = {
     	derived: function(){
     		var starttime = tool.getTimestamp($('#q_startTime').val()),
-    			endtime = tool.getTimestamp($('#q_endTime').val());
+    			endtime = tool.getTimestamp($('#q_endTime').val(),'23:59:59');
     		window.location = "/km_task/admin/dashboard/export?start_time=" + starttime + "&end_time=" + endtime;
     	}
     }
@@ -72,7 +72,7 @@ layui.define(['global', 'form', 'laydate'], function(exports){
 	layform.on('submit(check)', function(data){
 		var d = data.field,
 			starttime = tool.getTimestamp(d.startTime),
-	    	endtime = tool.getTimestamp(d.endTime);
+	    	endtime = tool.getTimestamp(d.endTime,'23:59:59');
 	    window.location = '/km_task/admin/dashboard/user?start_time=' + starttime + '&end_time=' + endtime;
 	    return false;
 	});

@@ -2,6 +2,15 @@ layui.define(['layer'], function(exports){
     var $ = layui.jquery,
         layer = layui.layer;
 
+	Array.prototype.remove = function(dx){
+		if( isNaN(dx) || dx > this.length ){ return false; }
+		for(var i = 0, n = 0; i < this.length; i++){
+			if(this[i] != this[dx]){
+				this[n++] = this[i];
+			}
+		}
+		this.length -= 1;
+	}
     var obj = {
     	formatDate: function(nS,type){
 	    	var pattern = type || "yyyy-MM-dd hh:mm";
@@ -26,8 +35,8 @@ layui.define(['layer'], function(exports){
 	        }
 	        return pattern;
 	    },
-	    getTimestamp:function(data,hasTime,t){
-	    	if(hasTime){
+	    getTimestamp:function(data,t){
+	    	if(typeof t=="boolean"&&t){
 	    		return new Date(data).getTime();
 	    	}else{
 	    		return new Date(data+(t?' '+t:' 00:00:00')).getTime();
@@ -131,9 +140,20 @@ layui.define(['layer'], function(exports){
 	                callbackError(jqXHR, textStatus, errorThrown);
 	            }
 	        });
+	    },
+	    handleSelect: function(el,data,val,txt){
+	    	var str='';
+			if(val&&txt){
+				for (var i = 0; i < data.length; i++) {
+					str += '<option value="'+ data[i][val] +'">'+ data[i][txt] +'</option>'; 
+				};
+			}else{
+				for (var i = 0; i < data.length; i++) {
+					str += '<option value="'+ data[i] +'">'+ data[i] +'</option>'; 
+				};
+			}
+			el.html(str);
 	    }
     }
-
-
     exports('global', obj);
 });

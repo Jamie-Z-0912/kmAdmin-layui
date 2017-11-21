@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="/km_task/v2/plugins/layui/css/layui.css" media="all" />
-    <link rel="stylesheet" href="/km_task/v2/css/main.css?t=1115" />
+    <link rel="stylesheet" href="/km_task/v2/css/main.css?t=1112" />
     <script src="/km_task/v2/plugins/layui/layui.min.js"></script>
 </head>
 <body>
@@ -69,11 +69,10 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">开始时间</label>
                     <div class="layui-input-inline">
-                        <input class="layui-input" id="q_startTime" name="startTime">
+                        <input class="layui-input" id="q_startTime" name="startTime" placeholder="开始时间">
                     </div>
                 </div>
             </div>
-
             <div class="layui-form-item">
                 <button class="layui-btn" lay-submit lay-filter="check"><i class="layui-icon">&#xe615;</i> 查询</button>
                 <a class="layui-btn js-operation" data-type="add"><i class="layui-icon">&#xe608;</i> 添加</a>
@@ -193,6 +192,7 @@
     <!-- 表单 -->
     <div id="formPane" style="display: none;padding: 10px;">
         <form id="myform" class="layui-form layui-form-pane1" action="">
+            <input type="hidden" name="id" disabled>
             <div class="layui-form-item">
                 <label class="layui-form-label">广告标题<br>热词</label>
                 <div class="layui-input-block">
@@ -206,6 +206,7 @@
                         <img src="" class="hide" />
                         <span><i class="layui-icon">&#xe608;</i>上传图片</span>
                         <input type="file" name="file">
+                        <i class="js-del">删除</i>
                     </div>
                     <div class="add-upimg" id="addTuPian">＋</div>
                 </div>

@@ -51,11 +51,6 @@ layui.define('layer' , function(exports){
             //文件上传
             $('form').on('change', elem, function() {
                 var _file = this, val = _file.value;
-                console.log(_file.files)
-                // if (_file.files.length == 0) {
-                //     return;
-                // }
-
                 var that = $(_file), formData = new FormData();
                 formData.append('file', this.files[0]);
                 //校验文件
@@ -86,7 +81,7 @@ layui.define('layer' , function(exports){
                     break;
                 }
     
-                opt.before && opt.before(elem);
+                opt.before && opt.before(_file);
 
                 for(var i in uploadData){
                     formData.set(i, uploadData[i]);
@@ -101,7 +96,7 @@ layui.define('layer' , function(exports){
                     success: function (res) {
                         function flightHandler(data){
                             $(_file).parent().find('img').attr('src',data.data.url).removeClass('hide');
-                            $.isFunction(opt.after)&&opt.after(data);
+                            $.isFunction(opt.after)&&opt.after(data,_file);
                         }
                         eval(res);
                     },  

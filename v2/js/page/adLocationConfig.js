@@ -18,43 +18,12 @@ layui.define(['global', 'form'], function(exports){
     			url:'/km_task/admin/adLocationConfig/add'
     		},function(data){
     			console.log(data);
-    			var str;
-				for (var i = 0; i < data.applications.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.applications[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#application').html(str);
-				for (var i = 0; i < data.platforms.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.platforms[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#platform').html(str);
-				for (var i = 0; i < data.versions.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.versions[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#version').html(str);
-				for (var i = 0; i < data.locations.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.locations[i];
-					str += '<option value="'+ cur_v.location +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#location').html(str);
-				for (var i = 0; i < data.layouts.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.layouts[i];
-					str += '<option value="'+ cur_v.layout +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#layout').html(str);
-				for (var i = 0; i < data.adChannels.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.adChannels[i];
-					str += '<option value="'+ cur_v.type +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#adsType').html(str);
+				tool.handleSelect($('#application'),data.applications);
+				tool.handleSelect($('#platform'),data.platforms);
+				tool.handleSelect($('#version'),data.versions);
+				tool.handleSelect($('#location'),data.locations,'location','desc');
+				tool.handleSelect($('#layout'),data.layouts,'layout','desc');
+				tool.handleSelect($('#adsType'),data.adChannels,'type','desc');
 				layform.render('select');
 
 				layer.open({
@@ -79,35 +48,10 @@ layui.define(['global', 'form'], function(exports){
     			url:'/km_task/admin/adLocationConfig/update',
     			data:{id:id}
     		},function(data){
-    			console.log(data);
-    			var str;
-				for (var i = 0; i < data.applications.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.applications[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#application').html(str);
-
-				for (var i = 0; i < data.locations.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.locations[i];
-					str += '<option value="'+ cur_v.location +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#location').html(str);
-
-				for (var i = 0; i < data.layouts.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.layouts[i];
-					str += '<option value="'+ cur_v.layout +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#layout').html(str);
-
-				for (var i = 0; i < data.adChannels.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.adChannels[i];
-					str += '<option value="'+ cur_v.type +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#adsType').html(str);
+				tool.handleSelect($('#application'),data.applications);
+				tool.handleSelect($('#location'),data.locations,'location','desc');
+				tool.handleSelect($('#layout'),data.layouts,'layout','desc');
+				tool.handleSelect($('#adsType'),data.adChannels,'type','desc');
 
 				var adConfig = data.adLocationConfig;
 				$('#application').val(adConfig.application);

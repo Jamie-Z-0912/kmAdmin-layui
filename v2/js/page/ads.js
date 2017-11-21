@@ -118,33 +118,11 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     		tool.getJspData({
     			url:'/km_task/admin/ads/add'
     		},function(data){
-    			console.log(data);
 				//将数据写入form
-				var str='';
-				for (var i = 0; i < data.applications.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.applications[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#application').html(str);
-				for (var i = 0; i < data.platforms.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.platforms[i];
-					str += '<option value="'+ cur_v +'">'+ cur_v +'</option>'; 
-				};
-				$('#platform').html(str);
-				for (var i = 0; i < data.layouts.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.layouts[i];
-					str += '<option value="'+ cur_v.layout +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#layout').html(str);
-				for (var i = 0; i < data.adsLocations.length; i++) {
-					i===0&&(str='');
-					var cur_v = data.adsLocations[i];
-					str += '<option value="'+ cur_v.location +'">'+ cur_v.desc +'</option>'; 
-				};
-				$('#adsLocation').html(str);
+				tool.handleSelect($('#application'),data.applications);
+				tool.handleSelect($('#platform'),data.platforms);
+				tool.handleSelect($('#layout'),data.layouts,'layout','desc');
+				tool.handleSelect($('#adsLocation'),data.adsLocations,'location','desc');
 				layform.render('select');
 				layer.open({
 					title:'新增广告位',
@@ -167,6 +145,36 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     			url:'/km_task/admin/ads/update/'+id,
     		},function(data){
     			console.log(data);
+    			var ad = data.ad;
+				tool.handleSelect($('#application'),data.applications);
+				tool.handleSelect($('#platform'),data.platforms);
+				tool.handleSelect($('#layout'),data.layouts,'layout','desc');
+				tool.handleSelect($('#adsLocation'),data.adsLocations,'location','desc');
+				if(ad.needLogin=="true"){
+					$('#needLogin').val(1);
+					$('#needLoginShow').attr('checked',true);
+				}else{
+					$('#needLogin').val(0);
+				}
+				layform.render();
+				$('#myform input[name="id"]').val(ad.id).attr('disabled',false);
+				$('#title').val(ad.title);
+				$('#images').val(ad.imagesList.join(','));
+				for (var i = 0; i < ad.imagesList.length; i++) {
+					$('#fileWrap .img').eq(i).find('img').attr('src',ad.imagesList[i]).removeClass('hide');
+					if(i+1 < ad.imagesList.length) $('#addTuPian').click();
+				};
+				$('#source').val(ad.source);
+				$('#originUrl').val(ad.originUrl);
+				$('#adsLocation').val(ad.adsLocation);
+				$('#application').val(data.application);
+				$('#platform').val(ad.platform);
+				$('#layout').val(ad.layout);
+				$('#startTime').val(tool.formatDate(ad.startTime, 'yyyy-MM-dd'))
+					.next().val(ad.startTime);
+				$('#endTime').val(tool.formatDate(ad.endTime, 'yyyy-MM-dd'))
+					.next().val(ad.endTime);
+				$('#tips').val(ad.tips);
 				layer.open({
 					title:'修改广告位',
 					type: 1,
@@ -174,7 +182,9 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click()
+						$('#reset').click();
+						$('#fileWrap .img').remove();
+						$('#addTuPian').click();
 					}
 				});
 			});
@@ -243,10 +253,14 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     			console.log(data);
     			var ad = data.ad,str='';
     			$('#tjAdTitle').html('<a href="'+ad.originUrl+'">'+ad.title+'</a>');
-    			for (var i = 0; i < data.tjData.length; i++) {
-    				var d = data.tjData[i];
-    				str+='<tr><td>'+d.date+'</td><td>'+d.uv+'</td><td>'+d.viewNum+'</td><td>'+d.click+'</td><td>'+d.clickUser+'</td></tr>'
-    			};
+    			if(data.tjData.length==0){
+    				str = '<tr><td colspan="5">暂时没有数据</td></tr>';
+    			}else{
+	    			for (var i = 0; i < data.tjData.length; i++) {
+	    				var d = data.tjData[i];
+	    				str+='<tr><td>'+d.date+'</td><td>'+d.uv+'</td><td>'+d.viewNum+'</td><td>'+d.click+'</td><td>'+d.clickUser+'</td></tr>'
+	    			};
+    			}
     			$('#tjAdData').html(str);
 				layer.open({
 					title:'统计',
@@ -266,26 +280,56 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	    operation[type].call(this);
 	});	
 	/* 上传图片方法 s */
+	var imgNum = 0;
 	layui.upload({
 		elem:'input[type="file"]',
         before: function(input){
-        	console.log('文件上传中');
         },
-        after: function(d){
+        after: function(d,input){
         	console.log(d);
         	var imgs = $('#images').val();
         	if(imgs == ''){
         		$('#images').val(d.data.url);
         	}else{
-        		$('#images').val(imgs+','+d.data.url);
+        		var arr = imgs.split(',');
+        		var cur_n = $(input).parent().index();
+        		if(cur_n < arr.length){
+        			$('#images').val(imgs+','+d.data.url);
+        		}else{
+        			arr[cur_n] = d.data.url;
+        			$('#images').val(arr.join(','));
+        		}
+
         	}
         }
 	});
+	//多图添加
 	var upimg = $('#fileWrap .layui-upimg:first-child').clone();
 	$('#addTuPian').on('click', function(){
-		var $el = $(this), file = upimg.clone();
-		$el.before(file);
+		if($('#fileWrap .layui-upimg img').hasClass('hide')){
+        	layer.msg("有未上传图片的空位！", {time:1500, icon: 2});
+		}else{
+			var $el = $(this), file = upimg.clone();
+			$el.before(file);
+		}
 	});
+	//多图删除
+	$('#fileWrap').on('click', '.js-del', function(){
+		var del = $(this), par = del.parent();
+		if(par.find('.hide').length>0){
+			par.remove();
+		}else{
+			var imgs = $('#images').val(),arr = imgs.split(',');
+    		var cur_n = par.index();
+    		if(cur_n < arr.length){
+    			arr.remove(cur_n);
+    			$('#images').val(arr.join(','));
+				par.remove();
+    		}else{
+				par.remove();
+    		}
+		}
+	})
 
 	$('#sogouLink').on('click', function(){
         var txt = $('#originUrl').val();
@@ -365,7 +409,17 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 	    return false;
 	});
 	layform.on('submit(update)', function(data){
-		console.log(data);
+		tool.submit({
+            url: '/km_task/admin/ads/update',
+            type: 'post',
+            data: $('#myform')
+        }, function(data){
+        	if(/<div class="admin-main">/.test(data)){
+        		location.reload();
+        	}else{
+        		layer.msg(data, { icon: 2, shift: 6});
+        	}
+        });	
 	    return false;
 	});
 	layform.on('submit(showTj)', function(data){
@@ -380,10 +434,14 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 			console.log(data);
 			var ad = data.ad,str='';
 			$('#tjAdTitle').html('<a href="'+ad.originUrl+'">'+ad.title+'</a>');
-			for (var i = 0; i < data.tjData.length; i++) {
-				var d = data.tjData[i];
-				str+='<tr><td>'+d.date+'</td><td>'+d.uv+'</td><td>'+d.viewNum+'</td><td>'+d.click+'</td><td>'+d.clickUser+'</td></tr>'
-			};
+			if(data.tjData.length==0){
+				str = '<tr><td colspan="5">暂时没有数据</td></tr>';
+			}else{
+				for (var i = 0; i < data.tjData.length; i++) {
+					var d = data.tjData[i];
+					str+='<tr><td>'+d.date+'</td><td>'+d.uv+'</td><td>'+d.viewNum+'</td><td>'+d.click+'</td><td>'+d.clickUser+'</td></tr>'
+				};
+			}
 			$('#tjAdData').html(str);
 		});
 		return false;

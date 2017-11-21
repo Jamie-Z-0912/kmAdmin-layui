@@ -4,9 +4,7 @@
 <%@ taglib prefix="suishen_fmt" uri="suishen.libs/fmt" %>
 <em>
     {
-
-    "ad":{"id":"${ad.id}","title":"${ad.title}","imagesList":"${ad.imagesList}","images":"${ad.images}","source":"${ad.source}","originUrl":"${ad.originUrl}"
-    ,"tips":"${ad.tips}","needLogin":"${ad.needLogin}","startTime":"${ad.startTime}","endTime":"${ad.endTime}","adsLocation":"${ad.adsLocation}"},
+    "ad":{"id":"${ad.id}","title":"${ad.title}","imagesList":[<c:forEach items="${ad.imagesList}" var="img" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${img}"</c:forEach>],"source":"${ad.source}","originUrl":"${ad.originUrl}","tips":"${ad.tips}","needLogin":"${ad.needLogin}","startTime":"${ad.startTime}","endTime":"${ad.endTime}","adsLocation":"${ad.adsLocation}"},
     "applications":[
     <c:forEach items="${applications}" var="app" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${app}"</c:forEach>
     ],
@@ -14,23 +12,16 @@
     "platforms":["ANDROID","IPHONE"],
     "adsLocations":[
     <c:forEach items="${adsLocations}" var="adsLocation" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"location":"${adsLocation.location}","desc":"${adsLocation.desc}"}</c:forEach>
-    ],
-    "versions":[
-    <c:forEach items="${versions}" var="ver" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${ver}"</c:forEach>
-    ],
+    ]
     "locations":[
     <c:forEach items="${locations}" var="loa" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"location":"${loa.location}","desc":"${loa.desc}"}</c:forEach>
     ],
     "layouts":[
     <c:forEach items="${layouts}" var="lay" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"layout":"${lay.layout}","desc":"${lay.desc}"}</c:forEach>
-    ],
-    "adChannels":[
-    <c:forEach items="${adChannels}" var="channel" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"type":"${channel.type}","desc":"${channel.desc}"}</c:forEach>
-    ],
-    "adLocationConfig":{"location":"${adLocationConfig.location}","platform":"${adLocationConfig.platform}","version":"${adLocationConfig.version}","layout":"${adLocationConfig.layout}","adsType":"${adLocationConfig.adsType}","adAppId":"${adLocationConfig.adAppId}","thirdLocationId":"${adLocationConfig.thirdLocationId}","remarks":"${adLocationConfig.remarks}"}
+    ]
     }
 </em>
-                <form action="admin/ads/update" method="post" id="basic_validate" name="basic_validate" class="form-horizontal" novalidate="novalidate">
+               <!--  <form action="admin/ads/update" method="post" id="basic_validate" name="basic_validate" class="form-horizontal" novalidate="novalidate">
                     <input type="hidden" id="id" name="id" class="input-xxlarge" value="${ad.id}"/>
                     <div class="control-group">
                         <label class="control-label">广告标题</label>
@@ -164,5 +155,5 @@
                             <i class="icon-undo"></i> 取消
                         </button>
                     </div>
-                </form>
+                </form> -->
 

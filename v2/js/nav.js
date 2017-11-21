@@ -44,7 +44,7 @@ var navs = [
 			"href": "/km_task/admin/systemMsg/list"
 		}, {
 			"title": "搜索补量",
-			"href": "/km_task/admin/searchKeyword/list"
+			"href": "/km_task/admin/searchKeywords/list"
 		}]
 	}, 
 	{
