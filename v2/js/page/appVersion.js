@@ -6,6 +6,7 @@ layui.define(['global', 'form', 'laydate'], function(exports){
 		tool = layui.global;
     /* 增加和操作处的点击 s */
     var operation = {
+        myform: $('#myform').clone(),
     	con_size: {
     		h:(innerHeight-60)+'px',
     		w:innerWidth<480?(innerWidth-20)+'px':'480px'
@@ -29,8 +30,8 @@ layui.define(['global', 'form', 'laydate'], function(exports){
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click();
-	    				$('#updateBtn').show();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
 			});
@@ -48,11 +49,11 @@ layui.define(['global', 'form', 'laydate'], function(exports){
 				//将数据写入form
 				tool.handleSelect($('#application'),data.applications);
 				tool.handleSelect($('#platform'),data.platforms);
+				$('#application').val(data.application);
+				$('#platform').val(data.platform);
 				layform.render('select');
 
 				$('#id').val(data.id);
-				$('#application').val(data.application);
-				$('#platform').val(data.platform);
 				$('#added_time').val(tool.formatDate(data.addedTime, 'yyyy-MM-dd'))
 					.next().val(data.addedTime);
 				$('#version').val(data.version);
@@ -66,8 +67,8 @@ layui.define(['global', 'form', 'laydate'], function(exports){
 					content: $('#formPane'),
 					success: function(layero, index){ },
 					cancel: function(){ 
-						$('#reset').click();
-	    				$('#addBtn').show();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
     		});

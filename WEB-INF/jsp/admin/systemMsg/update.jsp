@@ -3,31 +3,22 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="suishen_fmt" uri="suishen.libs/fmt" %>
 
-
 <em>
     {
-    "systemMsg":{"id":"${systemMsg.id}","platform":"${systemMsg.platform}","versions":"${systemMsg.versions}","msg":"${systemMsg.msg}"
-    ,"clickActionType":"${systemMsg.clickActionType}","action":"${systemMsg.action}","needLogin":"${systemMsg.needLogin}"},
-    "applications":[
-    <c:forEach items="${applications}" var="app" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${app}"</c:forEach>
+    "systemMsg":{"id":"${systemMsg.id}","platform":"${systemMsg.platform}","versions":"${systemMsg.versions}","msg":"${systemMsg.msg}","clickActionType":"${systemMsg.clickActionType}","action":"${systemMsg.action}","image":"${systemMsg.image}","needLogin":"${systemMsg.needLogin}","sendTime":"${systemMsg.sendTime}"},
+    "applications":[<c:forEach items="${applications}" var="app" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${app}"</c:forEach>
+    ],
+    "msgActions":[<c:forEach items="${msgActions}" var="ma" varStatus="st"><c:if test="${st.index!=0}">,</c:if>{"type":"${ma.type}","desc":"${ma.desc}"}</c:forEach>
     ],
     "application":"${application}",
-    "platforms":[
-    <c:forEach items="${platforms}" var="pt" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${pt}"}</c:forEach>
+    "platforms":[<c:forEach items="${platforms}" var="pt" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${pt}"</c:forEach>
     ],
     "versions":[
     <c:forEach items="${versions}" var="ver" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${ver}"</c:forEach>
-    ],
+    ]
     }
 </em>
-<!-- 页面
-<div id="main-content" class="clearfix">
-    <div id="page-content" class="clearfix">
-        <div class="page-header position-relative">
-            <h1>编辑系统通知</h1>
-        </div>
-        <div class="row-fluid">
-            <div class="row-fluid"> -->
+<!-- 
                 <form action="admin/systemMsg/update" method="post" id="basic_validate" name="basic_validate" class="form-horizontal" novalidate="novalidate">
                     <input type="hidden" id="id" name="id" class="input-xxlarge" value="${systemMsg.id}"/>
                     <div class="control-group">
@@ -134,48 +125,4 @@
                         </button>
                     </div>
                 </form>
-  <!--          </div>
-        </div>
-    </div>
-</div>
-
-    <link rel="stylesheet" href="assets/css/setting.css"/>
-    <script type="text/javascript" src="assets/js/setting.js"></script>
-    <script type="text/javascript" src="assets/js/setting_add_topic.js"></script>
-    <script type="text/javascript" src="assets/js/ajaxfileupload.js"></script>
-</body>
-<script>
-    $("#menu_app").addClass('active open');
-    $("#menu_systemMsg").addClass('active');
-    function cancel() {
-        history.go(-1);
-    }
-
-    $("#sendTime").slTime({
-        callback:function(){
-            gx();
-        }
-    });
-
-    function gx(){
-        var start = new Date($("#sendTime").val().replace(/-/g,   "/")).getTime();
-        $("#send_time_hidden").val(start);
-    }
-    $(function(){
-
-        if(Number(${systemMsg.sendTime})==0){
-            $("#sendTime").val("");
-        }else{
-            var time =new Date(Number(${systemMsg.sendTime})).format("yyyy-MM-dd hh:mm:ss");
-            $("#sendTime").val(time);
-            $("#send_time_hidden").val(Number(${systemMsg.sendTime}));
-        }
-
-    })
-
-    function clearSendTime(){
-        $("#sendTime").val("");
-        $("#send_time_hidden").val(0);
-    }
-</script>
-</html>  -->
+ -->

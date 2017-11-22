@@ -6,6 +6,7 @@ layui.define(['global', 'form'], function(exports){
 
     /* 增加和操作处的点击 s */
     var operation = {
+        myform: $('#myform').clone(),
     	con_size: {
     		h:(innerHeight-60)+'px',
     		w:innerWidth<480?(innerWidth-20)+'px':'480px'
@@ -33,8 +34,8 @@ layui.define(['global', 'form'], function(exports){
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#updateBtn').show();
-						$('#reset').click();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
     		});
@@ -72,8 +73,8 @@ layui.define(['global', 'form'], function(exports){
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#addBtn').show();
-						$('#reset').click();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
     		});

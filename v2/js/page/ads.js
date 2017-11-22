@@ -110,6 +110,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     
     /* 新增和操作处的点击 s */
     var operation = {
+        myform: $('#myform').clone(),
     	con_size: {
     		h:(innerHeight-60)+'px',
     		w:innerWidth<480?(innerWidth-20)+'px':'480px'
@@ -133,11 +134,8 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click();
-						$('#fileWrap .img').remove();
-						$('#addTuPian').click();
-						dt.start.max = dt.end.max = '2099-06-16';
-						dt.end.min = dt.end.start = laydate.now();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
 			});
@@ -149,12 +147,15 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     		tool.getJspData({
     			url:'/km_task/admin/ads/update/'+id,
     		},function(data){
-    			console.log(data);
     			var ad = data.ad;
 				tool.handleSelect($('#application'),data.applications);
 				tool.handleSelect($('#platform'),data.platforms);
 				tool.handleSelect($('#layout'),data.layouts,'layout','desc');
 				tool.handleSelect($('#adsLocation'),data.adsLocations,'location','desc');
+				$('#application').val(data.application);
+				$('#platform').val(ad.platform);
+				$('#layout').val(ad.layout);
+				$('#adsLocation').val(ad.adsLocation);
 				if(ad.needLogin=="true"){
 					$('#needLogin').val(1);
 					$('#needLoginShow').attr('checked',true);
@@ -171,10 +172,6 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 				};
 				$('#source').val(ad.source);
 				$('#originUrl').val(ad.originUrl);
-				$('#adsLocation').val(ad.adsLocation);
-				$('#application').val(data.application);
-				$('#platform').val(ad.platform);
-				$('#layout').val(ad.layout);
 				$('#startTime').val(tool.formatDate(ad.startTime, 'yyyy-MM-dd'))
 					.next().val(ad.startTime);
 				$('#endTime').val(tool.formatDate(ad.endTime, 'yyyy-MM-dd'))
@@ -187,12 +184,8 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click();
-						$('#myform input[name="id"]').attr('disabled',true);
-						$('#fileWrap .img').remove();
-						$('#addTuPian').click();
-						dt.start.max = dt.end.max = '2099-06-16';
-						dt.end.min = dt.end.start = laydate.now();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
 			});

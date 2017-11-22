@@ -100,6 +100,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     
     /* 增加和操作处的点击 s */
     var operation = {
+        myform: $('#myform').clone(),
     	con_size: {
     		h:(innerHeight-60)+'px',
     		w:innerWidth<480?(innerWidth-20)+'px':'480px'
@@ -122,9 +123,8 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click();
-						dt.start.max = dt.end.max = '2099-06-16';
-						dt.end.min = dt.end.start = laydate.now();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
     		})
@@ -141,6 +141,9 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 				tool.handleSelect($('#platform'),data.platforms);
 				tool.handleSelect($('#location'),data.popupLocations,'location','desc');
 				tool.handleSelect($('#userGroups'),data.userGroups,'group','groupName');
+				$('#platform').val(pop.platform);
+				$('#location').val(pop.location);
+				$('#userGroups').val(pop.userGroups);
 				if(pop.needLogin=="true"){
 					$('#needLogin').val(1);
 					$('#needLoginShow').attr('checked',true);
@@ -152,9 +155,6 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 				$('#title').val(pop.title);
 				$('#image').val(pop.image);
 				$('.img img').attr('src',pop.image).removeClass('hide');
-				$('#platform').val(pop.platform);
-				$('#location').val(pop.location);
-				$('#userGroups').val(pop.userGroups);
 				$('#url').val(pop.url);
 				$('#num').val(pop.num);
 				$('#startTime').val(tool.formatDate(pop.startTime, 'yyyy-MM-dd'))
@@ -169,11 +169,8 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click();
-						$('#myform input[name="id"]').attr('disabled',true);
-						$('.img img').attr('src','').addClass('hide');
-						dt.start.max = dt.end.max = '2099-06-16';
-						dt.end.min = dt.end.start = laydate.now();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
 			});

@@ -131,6 +131,110 @@
         </div>
         <div id="page"></div>
 	</div>
+
+    <div id="formPane" style="display: none;padding: 10px;">
+        <form id="myform" class="layui-form layui-form-pane1" action="">
+            <input type="hidden" name="id" disabled>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">推送应用</label>
+                <div class="layui-input-block">
+                    <select name="application" id="application" >
+                        <option value="">默认</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">推送平台</label>
+                <div class="layui-input-block">
+                    <select name="platform" id="platform">
+                        <option value="">DEFAULT</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">支持版本</label>
+                <div class="layui-input-block">
+                    <select name="versions" id="versions">
+                        <option value="">所有版本</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">通知内容<br><span class="red">必填</span></label>
+                <div class="layui-input-block">
+                     <input type="text" id="msg" name="msg" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">点击通知动作<br><span class="red">必填</span></label>
+                <div class="layui-input-block">
+                    <select name="clickActionType" id="clickActionType">
+                        <option value="2">打开App内指定页面</option>
+                    </select>  
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">跳转链接</label>
+                <div class="layui-input-block">
+                     <input type="text" id="action" name="action" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">跳转是否要登录</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" lay-filter="needLogin" id="needLoginShow" lay-skin="switch" lay-text="是|否">
+                    <input type="hidden" id="needLogin" name="needLogin" value="0" />  
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片</label>
+                <div class="layui-input-block file">
+                    <div class="layui-upimg img">
+                        <img src="" class="hide" />
+                        <span><i class="layui-icon">&#xe608;</i>上传图片</span>
+                        <input type="file" name="file">
+                    </div>
+                </div>
+                <input type="hidden" name="image" id="image" class="layui-input">
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">定时发送时间<br> <a href="javascript:;" id="clearSendTime">清除定时</a></label>
+                <div class="layui-input-block">
+                    <input class="layui-input" id="send_time" placeholder="定时时间"/>
+                    <input type="hidden" name="send_time" value="0">
+                </div>
+               
+            </div>
+            <div class="layui-form-item">
+                <div class="red">**注意**</div>
+                <p>
+                    点击通知动作选择: 打开App, 跳转链接为空<br>
+                    点击通知动作选择: 打开Url, 跳转链接必须是: http://XXX; <br>
+                    点击通知动作选择打开App指定页面时,跳转链接如下:<br>
+                    <ol class="has_order">
+                        <li>kmb://taskdetail?param={"taskid": 1} //赏金任务详情</li>
+                        <li>kmb://recommend?url=http://news.kuaima.cn/article.html?id=116667 //资讯详情</li>
+                        <li>kmb://makemoney //赚钱tab</li>
+                        <li>kmb://video //视频tab</li>
+                        <li>kmb://mine //单播都先跳到“我的”界面</li>
+                        <li>kmb://msgcenter //消息中心</li>
+                        <li>kmb://worthreading?id=116667 //值得看详情</li>
+                        <li>kmb://worthreadingtab //值得看tab</li>
+                    </ol>
+                </p>
+            </div>
+
+            <div class="layui-form-item t-r" id="addBtn">
+                <div class="layui-btn" lay-submit lay-filter="add">新增</div>
+            </div>
+            <div class="layui-form-item t-r" id="updateBtn">
+                <div class="layui-btn" lay-submit lay-filter="update">修改</div>
+            </div>
+            <button type="reset" id="reset" class="layui-hide">重置</button>
+        </form>
+    </div>
+
+
 <script>
     layui.config({
         base: '/km_task/v2/js/page/',

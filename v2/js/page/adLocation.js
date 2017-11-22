@@ -6,6 +6,7 @@ layui.define(['global', 'form', 'upload'], function(exports){
 
     /* 增加和操作处的点击 s */
     var operation = {
+        myform: $('#myform').clone(),
     	con_size: {
     		h:(innerHeight-60)+'px',
     		w:innerWidth<480?(innerWidth-20)+'px':'480px'
@@ -53,8 +54,8 @@ layui.define(['global', 'form', 'upload'], function(exports){
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#reset').click()
-						$('#updateBtn').show();
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
 			});
@@ -68,14 +69,13 @@ layui.define(['global', 'form', 'upload'], function(exports){
     			url:'/km_task/admin/adLocation/update',
     			data:{id:id}
     		},function(data){
-    			console.log(data);
 				tool.handleSelect($('#application'),data.applications);
+				$('#application').val(data.application);
 				layform.render('select');
 
 				$('#platforms,#versions,#layouts,#adsTypes').hide();
 				$('#location').val(data.adLocation.location).attr('disabled',true);
 				$('#desc').val(data.adLocation.desc);
-				$('#application').val(data.application);
 				$('#platform,#version,#layout,#adsType').attr('type','text').parent().removeClass('layui-hide');
 				$('#platform').val(data.adLocation.platform);
 				$('#version').val(data.adLocation.version);
@@ -93,12 +93,8 @@ layui.define(['global', 'form', 'upload'], function(exports){
 					area: [ size.w, size.h], 
 					content: $('#formPane'),
 					cancel: function(){ 
-						$('#addBtn').show();
-						$('#reset').click();
-						$('#location').attr('disabled',false);
-						$('.img img').attr('src','').addClass('hide');
-						$('#platforms,#versions,#layouts,#adsTypes').show();
-						$('#platform,#version,#layout,#adsType').val('').attr('type','hidden').parent().addClass('layui-hide');
+						var original = operation.myform.clone();
+                        $('#formPane').html(original);
 					}
 				});
     		})
