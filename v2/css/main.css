@@ -23,6 +23,7 @@
 .popups_size{max-width:460px;padding:10px 10px 0;}
 
 .layui-form .layui-form-item .red{color: red;}
+.layui-form .layui-form-item .tag{ display: inline-block; line-height: 2.5; padding: 0 10px;}
 .layui-form .t-r{ text-align: right;}
 .layui-form .t-c{ text-align: center;}
 .layui-form .fs_0{ font-size: 0;}

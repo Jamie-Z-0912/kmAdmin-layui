@@ -128,6 +128,7 @@ layui.define(['global', 'form', 'laypage', 'laydate', 'upload'], function(export
     		layer.confirm(str, {
 				btn: ['确定','取消'] //按钮
 			}, function(){
+                layer.load(2);
 			    tool.baseAjax({
 	        		url: '/km_task/admin/systemMsg/push',
 	        		data:{id:id},

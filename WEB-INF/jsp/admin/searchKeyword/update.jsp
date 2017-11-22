@@ -2,16 +2,30 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="suishen_fmt" uri="suishen.libs/fmt" %>
-<jsp:include page="../header.jsp" />
-<jsp:include page="../sidebar.jsp" />
-<!-- 页面 -->
+
+<em>
+    {
+    "platforms":[<c:forEach items="${platforms}" var="pt" varStatus="st"><c:if test="${st.index!=0}">,</c:if>"${pt}"</c:forEach>],
+    "keyword":{
+    "id":"${keyword.id}",
+    "keyword":"${keyword.keyword}",
+    "url":"${keyword.url}",
+    "source":"${keyword.source}",
+    "putNum":"${keyword.putNum}",
+    "startTime":"${keyword.startTime}",
+    "endTime":"${keyword.endTime}"
+    },
+    "ad":{"platform":"${ad.platform}"}
+}
+</em>
+<!-- 页面
 <div id="main-content" class="clearfix">
     <div id="page-content" class="clearfix">
         <div class="page-header position-relative">
             <h1>编辑搜索关键词</h1>
         </div>
         <div class="row-fluid">
-            <div class="row-fluid">
+            <div class="row-fluid">  -->
                 <form action="admin/searchKeywords/update" method="post" id="basic_validate" name="basic_validate" class="form-horizontal" novalidate="novalidate">
                     <input type="hidden" id="id" name="id" class="input-xlarge" value="${keyword.id}"/>
                     <div class="control-group">
@@ -80,7 +94,7 @@
                         </button>
                     </div>
                 </form>
-            </div>
+  <!--          </div>
          </div>
     </div>
 </div>
@@ -120,4 +134,4 @@
         $("#end_time_hidden").val(end);
     }
 </script>
-</html>
+</html>  -->
